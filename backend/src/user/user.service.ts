@@ -2,24 +2,46 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { MailerService } from 'src/mailer/mailer.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  constructor(private mailer: MailerService){}
+  constructor(
+    private mailer: MailerService,
+    private prisma: PrismaService
+  ){}
  async create(createUserDto: CreateUserDto) {
-
-
-    return 'This action adds a new user';
+  
+  return "create user";
   }
 
   async findAll() {
     //return `This action returns all user`;
-    await this.mailer.sendCreatedAccountEmail({recipient:"souleymanefafabh@gmail.com",firstName:"souleymane"});
-
+    const users = await this.prisma.user.findMany({
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        avatarFileKey: true,
+      },
+    });
+  
+    return users;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        avatarFileKey: true,
+      },
+    });
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
