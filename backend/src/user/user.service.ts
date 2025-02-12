@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { MailerService } from 'src/mailer/mailer.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
+ 
   constructor(
-    private mailer: MailerService,
     private prisma: PrismaService
   ){}
  async create(createUserDto: CreateUserDto) {
@@ -50,5 +49,12 @@ export class UserService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+  findEmail(username: string) {
+    return this.prisma.user.findUnique({
+      where: {
+        email: username,
+      },
+    });
   }
 }
