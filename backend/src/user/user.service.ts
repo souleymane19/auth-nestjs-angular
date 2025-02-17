@@ -10,8 +10,14 @@ export class UserService {
     private prisma: PrismaService
   ){}
  async create(createUserDto: CreateUserDto) {
-  
-  return "create user";
+    const user = await this.prisma.user.create({
+      data: {
+        email: createUserDto.email,
+        password: createUserDto.password,
+      },
+      select:{id:true,email:true, status:true}
+    });
+    return user;
   }
 
   async findAll() {
@@ -20,8 +26,6 @@ export class UserService {
       select: {
         id: true,
         email: true,
-        firstName: true,
-        avatarFileKey: true,
       },
     });
   
@@ -36,8 +40,7 @@ export class UserService {
       select: {
         id: true,
         email: true,
-        firstName: true,
-        avatarFileKey: true,
+        password: true,
       },
     });
     return user;
@@ -51,7 +54,7 @@ export class UserService {
     return `This action removes a #${id} user`;
   }
   findEmail(username: string) {
-    return this.prisma.user.findUnique({
+    return this.prisma.user.findFirst({
       where: {
         email: username,
       },
